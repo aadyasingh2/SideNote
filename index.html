@@ -1,17 +1,180 @@
-<!DOCTYPE html>
-<html>
+<style>
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background: transparent;
+    }
 
-<head>
-    <meta charset="UTF-8" />
-    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
-    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
-    <title>Hello from Electron renderer!</title>
-</head>
+    body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: -apple-system, "Segoe UI", sans-serif;
+    }
+
+    .glass {
+        width: 90%;
+        height: 90%;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        color: black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: none;
+        position: relative;
+    }
+
+    .full-ui {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+    }
+
+    .bubble-icon {
+        display: none;
+        /* hidden by default */
+        width: 100%;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .bubble-icon svg {
+        width: 32px;
+        height: 32px;
+        fill: rgba(255, 255, 255, 0.9);
+    }
+
+    /* when body has 'collapsed' class, swap which one shows */
+    body.collapsed .full-ui {
+        display: none;
+    }
+
+    body.collapsed .bubble-icon {
+        display: flex;
+    }
+
+    .drag-handle {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        cursor: grab;
+        -webkit-app-region: drag;
+    }
+
+    .drag-handle svg {
+        width: 16px;
+        height: 16px;
+        fill: rgba(255, 255, 255, 0.7);
+    }
+
+    .collapse-handle {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .collapse-handle svg {
+        width: 16px;
+        height: 16px;
+        fill: rgba(255, 255, 255, 0.7);
+    }
+
+    @keyframes bounceIn {
+        0% {
+            transform: scale(0.3);
+            opacity: 0;
+        }
+
+        50% {
+            transform: scale(1.15);
+            opacity: 1;
+        }
+
+        70% {
+            transform: scale(0.95);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    body.collapsed .glass {
+        animation: bounceIn 0.4s ease-out;
+    }
+</style>
 
 <body>
-    <h1>Hello from Electron renderer!</h1>
-    <p>👋</p>
-</body>
+    <div class="glass">
+        <div class="full-ui">
+            <div class="collapse-handle" id="collapseBtn">
+                <svg viewBox="0 0 24 24">
+                    <path d="M4 12h16" stroke="white" stroke-width="2" />
+                </svg>
+            </div>
+            <div class="drag-handle">
+                <svg viewBox="0 0 24 24">
+                    <circle cx="5" cy="5" r="2" />
+                    <circle cx="12" cy="5" r="2" />
+                    <circle cx="19" cy="5" r="2" />
+                    <circle cx="5" cy="12" r="2" />
+                    <circle cx="12" cy="12" r="2" />
+                    <circle cx="19" cy="12" r="2" />
+                    <circle cx="5" cy="19" r="2" />
+                    <circle cx="12" cy="19" r="2" />
+                    <circle cx="19" cy="19" r="2" />
+                </svg>
+            </div>
+            <h1>Hello Sidenote</h1>
+        </div>
+        <div class="bubble-icon" id="bubbleIcon">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.8" />
+            </svg>
+        </div>
+    </div>
+    <script>
+        const collapse = document.getElementById('collapseBtn')
+        const bubble = document.getElementById('bubbleIcon')
+        bubble.addEventListener('click', function () {
+            window.sidenote.getCollapse()
 
-</html>
+        })
+        window.sidenote.onCollapsed(() => {
+            document.body.classList.add('collapsed')
+        })
+        window.sidenote.onExpand(() => {
+            document.body.classList.remove('collapsed')
+        })
+        collapse.addEventListener('click', function () {
+            window.sidenote.getCollapse()
+
+        })
+    </script>
+</body>
